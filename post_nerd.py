@@ -8,7 +8,7 @@ import shared_tools
 
 def main ():
   if len(sys.argv) < 3:
-    print "usage : post_nerd.py <file_name> <remote_url> <output_file>"
+    print "usage : post_nerd.py <file_name> <remote_url>"
   else:  
 
     file_name = sys.argv[1]
@@ -30,9 +30,10 @@ def main ():
 
     data = { "query" : json_data }
     print "posting " + file_name + " to " + url
-    #print json.dumps(json_data)
+
     r = requests.post(url, data=data, files=files )
     resp = {} 
+
     print r.status_code
     if r.status_code == 200:
       resp = r.json()
@@ -43,7 +44,7 @@ def main ():
 def store_answer(file_name, resp):
   cache_path = shared_tools.get_cache_path(file_name)
   pickle.dump(resp,open(cache_path,"wb" ))
-  print cache_path
+  print "Result stored in " + cache_path
 
 if __name__ == "__main__":
     main()
