@@ -17,8 +17,6 @@ def main ():
     nerd_data=pickle.load( open (cache_path, "rb") )
     for key,val in nerd_data.items():
       print key
-    print nerd_data['onlyNER']
-    quit()
 
     if 'entities' in nerd_data:
       prepare_tables(database_file_path)
@@ -26,6 +24,8 @@ def main ():
     
 def save_entities(oapen_id, entities,database_file_path):
   db = sqlite3.connect(database_file_path)
+  db.execute("delete from oapen_entities where oapen_id = ? ",(oapen_id,))      
+
   for e in entities:
     if 'wikipediaExternalRef' in e:
       t = e['type'] if 'type' in e else ''
@@ -42,7 +42,7 @@ def prepare_tables(database_file_path):
   else:
     db = sqlite3.connect(database_file_path)
    
-    db.execute('CREATE TABLE IF NOT EXISTS oapen_entities ( oapenId INT,  wikipediaExternalRef TEXT, rawName TEXT, nerd_score REAL, nerd_selection_score REAL, type TEXT, domains TEXT)' )
+    db.execute('CREATE TABLE IF NOT EXISTS oapen_entities ( oapen_id INT,  wikipediaExternalRef TEXT, rawName TEXT, nerd_score REAL, nerd_selection_score REAL, type TEXT, domains TEXT)' )
 
 if __name__ == "__main__":
     main()
