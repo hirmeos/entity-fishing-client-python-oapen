@@ -11,18 +11,16 @@ def main ():
     print "usage : post_nerd.py <file_name> <remote_url> <English_or_German>"
   else: 
     lang = shared_tools.get_language_code(sys.argv[3])
- 
     file_name = sys.argv[1]
+
     try:
       files = {'file' : open(file_name,'rb')}
     except Exception, e:
       print "Could not open filename: " + file_name
       print str(e)
-      quit()
+      sys.exit(1)
     
     url = sys.argv[2]
-    
-    print lang
 
     json_data = '''{
       "language": {
@@ -39,8 +37,21 @@ def main ():
 
     data = { "query" : json_data }
     print "posting " + file_name + " to " + url
+    try:
+      r = requests.post(url, data=data, files=files ,timeout=3600) # 1 hour timeout
+    except requests.exceptions.HTTPError as errh:
+      print ("Http Error:",errh)
+      sys.exit(1)
+    except requests.exceptions.ConnectionError as errc:
+      print ("Error Connecting:",errc)
+      sys.exit(1)
+    except requests.exceptions.Timeout as errt:
+      print ("Timeout Error:",errt)
+      sys.exit(1)
+    except requests.exceptions.RequestException as err:
+      print ("Unknown Error ",err) 
+      sys.exit(1)
 
-    r = requests.post(url, data=data, files=files )
     resp = {} 
 
     print r.status_code
@@ -51,8 +62,8 @@ def main ():
       print r.reason
     
 def store_answer(file_name, resp):
-  cache_path = shared_tools.get_cache_path(file_name)
-  pickle.dump(resp,open(cache_path,"wb" ))
+  cache_path = shared_tools.get_cache_path( file_name )
+  pickle.dump( resp,open(cache_path,"wb") )
   print "Nerd response stored in " + cache_path
 
 if __name__ == "__main__":

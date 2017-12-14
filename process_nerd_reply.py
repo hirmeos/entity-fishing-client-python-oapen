@@ -50,8 +50,10 @@ def prepare_tables(database_file_path):
     print database_file_path +" found." 
   else:
     db = sqlite3.connect(database_file_path)
-   
-    db.execute('CREATE TABLE IF NOT EXISTS oapen_entities ( oapen_id INT,  rawName TEXT, nerd_score REAL, nerd_selection_score REAL, wikipediaExternalRef TEXT, wiki_URL TEXT, type TEXT, domains TEXT)' )
+ 
+    db.execute('CREATE TABLE IF NOT EXISTS oapen_entities (oapen_id INT, rawName TEXT, nerd_score REAL, nerd_selection_score REAL, wikipediaExternalRef TEXT, wiki_URL TEXT, type TEXT, domains TEXT)' )
+    db.execute ("CREATE INDEX idx1 ON oapen_entities( oapen_id )")
+    db.execute ("CREATE INDEX idx2 ON oapen_entities( wikipediaExternalRef )")
     db.commit()
     print database_file_path + ' created.'
 if __name__ == "__main__":
